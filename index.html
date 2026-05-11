@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三姨｜薪資系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0f1923;--paper:#f5f0e8;--cream:#ede8dc;--green:#1a6b3a;--green-lt:#d4edda;--amber:#b35c00;--amber-lt:#fdebd0;--blue:#1a3a6b;--blue-lt:#dce8f7;--gold:#8b6914;--gold-lt:#fdf3d0;--rule:#c8c0b0;--gray:#f3f0ea;--mono:'DM Mono',monospace;--serif:'Noto Serif TC',serif;--sans:'Noto Sans TC',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.top-nav{background:var(--ink);padding:0 32px;display:flex;align-items:center;gap:0;position:sticky;top:0;z-index:100;border-bottom:2px solid var(--gold)}
+.nav-brand{font-family:var(--serif);font-size:13px;color:white;font-weight:700;padding:13px 20px 13px 0;border-right:1px solid rgba(255,255,255,.15);margin-right:4px;white-space:nowrap}
+.nav-tab{padding:13px 16px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.45);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;border:none;background:none;font-family:var(--sans);margin-bottom:-2px}
+.nav-tab:hover{color:rgba(255,255,255,.8)}
+.nav-tab.active{color:white;border-bottom:2px solid var(--gold)}
+.nav-spacer{flex:1}
+.nav-link{padding:8px 14px;font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);border-radius:2px;text-decoration:none;transition:all .2s;white-space:nowrap;font-family:var(--sans)}
+.nav-link:hover{background:var(--gold);color:white}
+.page{display:none;max-width:860px;margin:0 auto;padding:40px 36px 60px;animation:fadeUp .3s ease both}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.masthead{border-top:3px solid var(--ink);border-bottom:1px solid var(--ink);padding:18px 0 14px;margin-bottom:24px;display:flex;align-items:flex-end;justify-content:space-between}
+.brand-eye{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#888;margin-bottom:5px}
+.brand-name{font-family:var(--serif);font-size:26px;font-weight:900;line-height:1}
+.brand-role{font-size:11px;color:#666;margin-top:5px;font-weight:300}
+.meta{text-align:right;font-family:var(--mono);font-size:10px;color:#888;line-height:1.9}
+.meta strong{display:block;font-size:12px;color:var(--ink);font-family:var(--sans)}
+.kpi-band{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--ink);border:1px solid var(--ink);margin-bottom:24px}
+.kpi{background:var(--paper);padding:15px 14px 13px}
+.kpi.dark{background:var(--ink);color:white}
+.kpi.gold{background:var(--gold);color:white}
+.kpi.sub{background:var(--gold-lt)}
+.kpi-label{font-size:8px;font-weight:500;letter-spacing:2px;text-transform:uppercase;opacity:.6;margin-bottom:4px}
+.kpi-value{font-family:var(--serif);font-size:22px;line-height:1;letter-spacing:-1px}
+.kpi-sub{font-family:var(--mono);font-size:9.5px;margin-top:3px;opacity:.65}
+.kpi.sub .kpi-label{color:var(--gold);opacity:.8}
+.kpi.sub .kpi-value{color:var(--gold);font-size:18px}
+.kpi.sub .kpi-sub{color:var(--gold);opacity:.6}
+.sec{display:flex;align-items:center;gap:10px;margin:22px 0 9px}
+.sec-n{font-family:var(--serif);font-size:11px;width:22px;height:22px;border:1.5px solid var(--ink);display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0}
+.sec-t{font-size:9.5px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase}
+.sec-r{flex:1;height:1px;background:var(--rule)}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl thead tr{border-bottom:1.5px solid var(--ink)}
+.tbl thead th{font-size:8.5px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 9px 6px;text-align:left}
+.tbl thead th:not(:first-child){text-align:right}
+.tbl tbody tr{border-bottom:1px solid var(--cream)}
+.tbl tbody td{padding:7px 9px}
+.tbl tbody td:not(:first-child){text-align:right;font-family:var(--mono);font-size:11.5px}
+.tbl .hit td{background:var(--gold-lt);color:var(--gold);font-weight:700}
+.tbl .total td{background:var(--ink);color:white;font-weight:700;border-top:1.5px solid var(--ink)}
+.tbl .total td:first-child{font-family:var(--sans)}
+.tbl .deduct td{color:var(--amber)}
+.bonus-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+.bc{border:1px solid var(--rule);padding:12px;position:relative}
+.bc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.bc.g::before{background:var(--green)}.bc.gold::before{background:var(--gold)}.bc.b::before{background:var(--blue)}
+.bc-tag{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;margin-top:2px}
+.bc.g .bc-tag{color:var(--green)}.bc.gold .bc-tag{color:var(--gold)}.bc.b .bc-tag{color:var(--blue)}
+.bc-val{font-family:var(--mono);font-size:18px;font-weight:500;margin-bottom:3px}
+.bc.g .bc-val{color:var(--green)}.bc.gold .bc-val{color:var(--gold)}.bc.b .bc-val{color:var(--blue)}
+.bc-title{font-size:11px;font-weight:700;margin-bottom:3px}
+.bc-body{font-size:10px;color:#666;line-height:1.5}
+.milestone{background:var(--ink);color:white;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-top:16px}
+.ms-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;opacity:.5;margin-bottom:4px}
+.ms-val{font-family:var(--serif);font-size:20px;font-weight:900}
+.ms-badge{background:var(--gold);color:white;font-size:10px;font-weight:700;padding:4px 10px;letter-spacing:1px}
+.acc{border:1px solid var(--rule);margin-top:8px;overflow:hidden}
+.acc-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--gray);border:none;cursor:pointer;font-family:var(--sans);font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);transition:background .2s}
+.acc-btn:hover{background:#e4e0d6}
+.acc-btn.open{background:var(--gold-lt)}
+.acc-arrow{transition:transform .25s;font-size:10px}
+.acc-btn.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.acc-body.open{max-height:1200px}
+.acc-inner{padding:14px 14px 16px}
+.hist-tbl{width:100%;border-collapse:collapse;font-size:11.5px}
+.hist-tbl thead tr{border-bottom:1.5px solid var(--ink)}
+.hist-tbl thead th{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 8px 5px;text-align:left}
+.hist-tbl thead th:not(:first-child){text-align:right}
+.hist-tbl tbody tr{border-bottom:1px solid var(--cream)}
+.hist-tbl tbody td{padding:8px 8px}
+.hist-tbl tbody td:not(:first-child){text-align:right;font-family:var(--mono);font-size:11px}
+.hist-tbl .current td{font-weight:700;color:var(--gold)}
+.flow-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:12px 0}
+.step{padding:12px 14px;border:1px solid var(--rule);border-right:none;background:var(--gray)}
+.step:last-child{border-right:1px solid var(--rule)}
+.step-num{font-family:var(--mono);font-size:22px;font-weight:500;color:var(--gold);opacity:.4;line-height:1;margin-bottom:4px}
+.step-title{font-size:11px;font-weight:700;margin-bottom:3px}
+.step-body{font-size:10px;color:#666;line-height:1.5}
+.asset-cat{margin-bottom:16px}
+.asset-cat-title{font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--gold-lt)}
+.asset-items{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.asset-item{border:1px solid var(--rule);padding:10px 12px;background:white}
+.asset-item-title{font-size:11px;font-weight:700;margin-bottom:3px}
+.asset-item-output{font-size:10px;color:#666;line-height:1.5}
+.asset-item-output::before{content:'產出物：';font-weight:600;color:#888}
+.prog-wrap{margin:4px 0}
+.prog-label{display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px}
+.prog-bar{height:6px;background:#e0dbd0;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width .8s ease}
+.pg-gold{background:var(--gold)}
+.grow-trigger{background:var(--gold-lt);border:1px solid var(--gold);border-left:3px solid var(--gold);padding:14px 16px;margin-top:12px}
+.gt-title{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:5px}
+.gt-body{font-size:10.5px;color:#5a4000;line-height:1.65}
+.folio{margin-top:36px;padding-top:10px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;font-size:9px;color:#bbb;font-family:var(--mono)}
+</style>
+</head>
+<body>
+<nav class="top-nav">
+  <div class="nav-brand">三明治自己來</div>
+  <button class="nav-tab active" onclick="showTab('salary')">薪資明細</button>
+  <button class="nav-tab" onclick="showTab('structure')">薪資結構</button>
+  <button class="nav-tab" onclick="showTab('asset')">資產建置目標</button>
+  <div class="nav-spacer"></div>
+  <a class="nav-link" href="https://je85ss85.github.io/sandwich-FSR/" target="_blank">↗ 月度財報</a>
+</nav>
+
+<!-- ══ 薪資明細 ══ -->
+<div class="page active" id="tab-salary">
+<div class="masthead">
+  <div><div class="brand-eye">薪資發放明細</div><div class="brand-name">三姨</div><div class="brand-role">👑 品牌策略・行銷內容・營運管理</div></div>
+  <div class="meta"><strong>2026年4月</strong>發放日：4月13日<br>結算：3月預購1＋賣貨便4＋香港2</div>
+</div>
+
+<div class="kpi-band">
+  <div class="kpi dark"><div class="kpi-label">實發總計</div><div class="kpi-value">$60,394</div><div class="kpi-sub">扣健保後</div></div>
+  <div class="kpi"><div class="kpi-label">固定底薪</div><div class="kpi-value">$51,000</div><div class="kpi-sub">月固定</div></div>
+  <div class="kpi gold"><div class="kpi-label">淨利分紅</div><div class="kpi-value">$10,216</div><div class="kpi-sub">淨利$204,319×5%</div></div>
+  <div class="kpi sub"><div class="kpi-label">健保自付扣款</div><div class="kpi-value">-$822</div><div class="kpi-sub">投保薪資$53,000</div></div>
+</div>
+
+<div class="sec"><div class="sec-n">一</div><div class="sec-t">本月營運摘要</div><div class="sec-r"></div></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--rule);gap:0;margin-bottom:4px">
+  <div style="padding:10px 12px;border-right:1px solid var(--rule)"><div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:3px">本期營收</div><div style="font-family:var(--mono);font-size:14px;font-weight:500">$472,425</div><div style="font-size:9px;color:#aaa">47.2425w</div></div>
+  <div style="padding:10px 12px;border-right:1px solid var(--rule)"><div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:3px">毛利率</div><div style="font-family:var(--mono);font-size:14px;font-weight:500;color:var(--green)">84.51%</div><div style="font-size:9px;color:#aaa">$399,267</div></div>
+  <div style="padding:10px 12px;border-right:1px solid var(--rule)"><div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:3px">本月淨利</div><div style="font-family:var(--mono);font-size:14px;font-weight:500;color:var(--gold)">$204,319</div><div style="font-size:9px;color:#aaa">43.25%</div></div>
+  <div style="padding:10px 12px"><div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-bottom:3px">分紅觸發</div><div style="font-family:var(--mono);font-size:14px;font-weight:500;color:var(--gold)">× 5%</div><div style="font-size:9px;color:#aaa">淨利≥$200,000</div></div>
+</div>
+<div style="padding:8px 12px;background:#fdf8e8;border:1px solid var(--rule);border-top:none;font-size:10.5px;color:#5a4000;margin-bottom:18px">
+  📈 四月淨利 $204,319，觸發 5% 分紅，較三月大幅成長。
+</div>
+
+<div class="sec"><div class="sec-n">二</div><div class="sec-t">薪資明細</div><div class="sec-r"></div></div>
+<table class="tbl">
+  <thead><tr><th>項目</th><th>金額</th><th>說明</th></tr></thead>
+  <tbody>
+    <tr><td><strong>固定底薪</strong></td><td>$51,000</td><td>月固定</td></tr>
+    <tr><td>淨利分紅</td><td>$10,216</td><td>$204,319 × 5%</td></tr>
+    <tr><td style="color:var(--amber)">健保自付扣款</td><td style="color:var(--amber);font-family:var(--mono)">-$822</td><td>員工自付30%</td></tr>
+    <tr class="total"><td>實發總計</td><td>$60,394</td><td>本期實發</td></tr>
+  </tbody>
+</table>
+
+<div class="sec" style="margin-top:20px"><div class="sec-n">三</div><div class="sec-t">分紅說明</div><div class="sec-r"></div></div>
+<div class="bonus-grid">
+  <div class="bc gold">
+    <div class="bc-tag">本月觸發</div>
+    <div class="bc-val">$10,216</div>
+    <div class="bc-title">淨利 $204,319 × 5%</div>
+    <div class="bc-body">淨利超過 $200,000 觸發 5% 分紅。分紅直接反映整體經營成果。</div>
+  </div>
+  <div class="bc g">
+    <div class="bc-tag">下個門檻</div>
+    <div class="bc-val">× 7%</div>
+    <div class="bc-title">淨利達 $300,000</div>
+    <div class="bc-body">達到後分紅跳至 7%，月分紅可達 $21,000 以上。</div>
+  </div>
+  <div class="bc" style="border-left:3px solid var(--gold)">
+    <div class="bc-tag" style="color:var(--gold)">底薪成長觸發</div>
+    <div class="bc-val" style="color:var(--gold);font-size:14px">$58,000</div>
+    <div class="bc-title">月營收連續3個月≥$600,000</div>
+    <div class="bc-body">達成後底薪自動升至 $58,000，制度反映成長，不用另行談薪。</div>
+  </div>
+</div>
+
+<div class="milestone">
+  <div><div class="ms-label">里程碑目標</div><div class="ms-val">月營收 $1,000,000</div></div>
+  <div style="flex:1;margin:0 24px"><div style="height:8px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden"><div style="height:100%;width:47.2%;background:var(--gold);border-radius:4px"></div></div><div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;opacity:.5;margin-top:4px"><span>$0</span><span>$472,425 / $1,000,000</span></div></div>
+  <div class="ms-badge">淨利預估 +$70,000 分紅</div>
+</div>
+
+<div class="sec" style="margin-top:24px"><div class="sec-n">四</div><div class="sec-t">薪資歷史</div><div class="sec-r"></div></div>
+<div class="acc">
+  <button class="acc-btn" onclick="toggleAcc(this)"><span>展開歷史紀錄</span><span class="acc-arrow">▼</span></button>
+  <div class="acc-body"><div class="acc-inner">
+    <table class="hist-tbl">
+      <thead><tr><th>月份</th><th>底薪</th><th>分紅</th><th>健保扣款</th><th>實發</th></tr></thead>
+      <tbody>
+        <tr><td>2026年3月</td><td>$51,000</td><td>$5,708</td><td>-$822</td><td>$55,886</td></tr>
+        <tr class="current"><td>2026年4月 ▶</td><td>$51,000</td><td>$10,216</td><td>-$822</td><td><strong>$60,394</strong></td></tr>
+      </tbody>
+    </table>
+  </div></div>
+</div>
+
+<style id="slip-style">
+.slip-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;background:var(--ink);color:white;border:none;cursor:pointer;font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:20px;transition:background .2s}
+.slip-btn:hover{background:var(--green)}
+#slip-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9000}
+#slip-modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;z-index:9999;padding:40px 44px;width:520px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.slip-close-btn{position:absolute;top:14px;right:16px;background:none;border:none;cursor:pointer;font-size:18px;color:#999;line-height:1}
+.slip-close-btn:hover{color:#333}
+.slip-co{font-size:15px;font-weight:700;margin-bottom:2px;font-family:var(--sans)}
+.slip-info{font-size:11px;color:#666;margin-bottom:14px;line-height:1.9}
+.slip-title{font-size:14px;font-weight:700;text-align:center;border-top:2px solid #000;border-bottom:2px solid #000;padding:7px 0;margin:12px 0;letter-spacing:2px;font-family:var(--sans)}
+.slip-sec{font-size:10px;font-weight:700;color:#777;letter-spacing:2px;text-transform:uppercase;margin:14px 0 5px}
+.slip-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dotted #e0e0e0;font-size:12.5px}
+.slip-row .lbl{color:#333}
+.slip-row .amt{font-family:monospace;font-weight:600}
+.slip-note{font-size:9.5px;color:#aaa;margin-left:6px}
+.slip-sub{display:flex;justify-content:space-between;padding:6px 0;font-weight:700;border-top:1.5px solid #333;margin-top:3px;font-size:13px}
+.slip-total{display:flex;justify-content:space-between;padding:8px 0;font-size:15px;font-weight:700;border-top:2px solid #000;border-bottom:2px solid #000;margin-top:3px;font-family:var(--sans)}
+.slip-footer{font-size:11px;color:#555;margin-top:16px;line-height:2}
+.slip-print-row{display:flex;gap:10px;margin-top:20px}
+.slip-print-btn{flex:1;padding:9px;background:#0f1923;color:white;border:none;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:1px}
+.slip-print-btn:hover{background:#2a4a6b}
+.slip-cancel-btn{padding:9px 16px;background:none;border:1px solid #ccc;cursor:pointer;font-size:11px;color:#666}
+@media print{
+  body>*:not(#slip-modal){display:none!important}
+  #slip-modal{display:block!important;position:static!important;transform:none!important;box-shadow:none!important;padding:20px!important;width:100%!important;max-height:none!important}
+  .slip-close-btn,.slip-print-row{display:none!important}
+  #slip-overlay{display:none!important}
+}
+</style>
+<button class="slip-btn" onclick="document.getElementById('slip-overlay').style.display='block';document.getElementById('slip-modal').style.display='block'">
+  🖨&nbsp;&nbsp;列印薪資單
+</button>
+
+<div id="slip-overlay" onclick="closeSlip()"></div>
+<div id="slip-modal">
+  <button class="slip-close-btn" onclick="closeSlip()">✕</button>
+  <div class="slip-co">拾起百味有限公司</div>
+  <div class="slip-info">統一編號：60493910　｜　台中市東勢區102巷66號</div>
+  <div class="slip-title">2026年4月　薪　資　單</div>
+  <div class="slip-info">
+    姓名：張禹婕　　　職稱：負責人<br>
+    結算區間：2026年3月1日 ～ 3月31日<br>
+    發放日期：2026年4月13日
+  </div>
+
+  <div class="slip-sec">應發項目</div>
+  <div class="slip-row"><span class="lbl">本薪</span><span class="amt">$51,000</span></div>
+  <div class="slip-row"><span class="lbl">分紅獎金</span><span class="amt">$10,216</span></div>
+  <div class="slip-sub"><span>議定工資總額</span><span>$61,216</span></div>
+
+  <div class="slip-sec">應扣項目</div>
+  <div class="slip-row"><span class="lbl">全民健康保險費（員工自付）</span><span class="amt">$822</span></div>
+  <div class="slip-sub"><span>應扣合計</span><span>$822</span></div>
+
+  <div class="slip-total"><span>實際發給金額</span><span>$60,394</span></div>
+
+  <div class="slip-footer">
+    到職日期：2025年10月30日<br>
+    特別休假：本年度 0 天｜已用 0 天｜剩餘 0 天<br><br>
+    雇主：拾起百味有限公司
+  </div>
+  <div class="slip-print-row">
+    <button class="slip-print-btn" onclick="window.print()">🖨 列印 ／ 儲存 PDF</button>
+    <button class="slip-cancel-btn" onclick="closeSlip()">關閉</button>
+  </div>
+</div>
+<script>function closeSlip(){document.getElementById('slip-overlay').style.display='none';document.getElementById('slip-modal').style.display='none'}</script>
+
+
+<div class="folio"><span>三明治自己來 SANDWICH.STORE</span><span>三姨 薪資系統</span><span>2026.04</span></div>
+</div>
+
+<!-- ══ 薪資結構 ══ -->
+<div class="page" id="tab-structure">
+<div class="masthead">
+  <div><div class="brand-eye">薪資制度說明</div><div class="brand-name">三姨</div></div>
+  <div class="meta"><strong>制度版本 v4.1</strong>2026年適用</div>
+</div>
+<div class="kpi-band">
+  <div class="kpi"><div class="kpi-label">固定底薪</div><div class="kpi-value">$51,000</div><div class="kpi-sub">每月保證</div></div>
+  <div class="kpi"><div class="kpi-label">分紅觸發（淨利）</div><div class="kpi-value">3～7%</div><div class="kpi-sub">按淨利區間</div></div>
+  <div class="kpi"><div class="kpi-label">健保自付</div><div class="kpi-value">-$822</div><div class="kpi-sub">每月固定扣</div></div>
+  <div class="kpi dark"><div class="kpi-label">實發最高（不含里程碑）</div><div class="kpi-value">無上限</div><div class="kpi-sub">隨淨利成長</div></div>
+</div>
+
+<div class="sec"><div class="sec-n">分紅</div><div class="sec-t">淨利分紅制度</div><div class="sec-r"></div></div>
+<table class="tbl">
+  <thead><tr><th>淨利區間</th><th>分紅比例</th><th>分紅金額範圍</th><th>實發範圍</th></tr></thead>
+  <tbody>
+    <tr><td>淨利 $0 ～ $99,999</td><td>0%</td><td>$0</td><td>$50,178</td></tr>
+    <tr><td>淨利 $100,000 ～ $199,999</td><td>3%</td><td>$3,000 ～ $5,999</td><td>$53,178 ～ $56,177</td></tr>
+    <tr class="hit"><td>淨利 $200,000 ～ $299,999　▶ 四月 $204,319</td><td>5%</td><td>$10,000 ～ $14,999</td><td>$60,178 ～ $65,177</td></tr>
+    <tr><td>淨利 ≥ $300,000</td><td>7%</td><td>$21,000+</td><td>$71,178+</td></tr>
+  </tbody>
+</table>
+
+<div class="grow-trigger">
+  <div class="gt-title">🌱 底薪自動成長觸發條件</div>
+  <div class="gt-body">月營收連續 3 個月 ≥ $600,000 → 底薪自動升至 $58,000。制度直接反映品牌成長，不需另行協商。</div>
+</div>
+
+<div class="sec" style="margin-top:20px"><div class="sec-n">成長</div><div class="sec-t">薪資成長路徑</div><div class="sec-r"></div></div>
+<div style="margin-top:6px">
+  <div class="prog-wrap"><div class="prog-label"><span>月淨利 $100,000 → 實發約 $53,178</span><span style="font-family:var(--mono)">分紅 3%</span></div><div class="prog-bar"><div class="prog-fill pg-gold" style="width:35%"></div></div></div>
+  <div class="prog-wrap" style="margin-top:10px"><div class="prog-label"><span>月淨利 $200,000 → 實發約 $61,178</span><span style="font-family:var(--mono)">分紅 5%（現在）</span></div><div class="prog-bar"><div class="prog-fill pg-gold" style="width:55%"></div></div></div>
+  <div class="prog-wrap" style="margin-top:10px"><div class="prog-label"><span>月淨利 $300,000 → 實發約 $71,178</span><span style="font-family:var(--mono)">分紅 7%</span></div><div class="prog-bar"><div class="prog-fill pg-gold" style="width:72%"></div></div></div>
+  <div class="prog-wrap" style="margin-top:10px"><div class="prog-label"><span>月淨利 $420,000（$100萬營收）→ 實發約 $79,578</span><span style="font-family:var(--mono)">分紅 7%</span></div><div class="prog-bar"><div class="prog-fill pg-gold" style="width:100%"></div></div></div>
+</div>
+
+<style id="slip-style">
+.slip-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;background:var(--ink);color:white;border:none;cursor:pointer;font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:20px;transition:background .2s}
+.slip-btn:hover{background:var(--green)}
+#slip-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9000}
+#slip-modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;z-index:9999;padding:40px 44px;width:520px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.slip-close-btn{position:absolute;top:14px;right:16px;background:none;border:none;cursor:pointer;font-size:18px;color:#999;line-height:1}
+.slip-close-btn:hover{color:#333}
+.slip-co{font-size:15px;font-weight:700;margin-bottom:2px;font-family:var(--sans)}
+.slip-info{font-size:11px;color:#666;margin-bottom:14px;line-height:1.9}
+.slip-title{font-size:14px;font-weight:700;text-align:center;border-top:2px solid #000;border-bottom:2px solid #000;padding:7px 0;margin:12px 0;letter-spacing:2px;font-family:var(--sans)}
+.slip-sec{font-size:10px;font-weight:700;color:#777;letter-spacing:2px;text-transform:uppercase;margin:14px 0 5px}
+.slip-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dotted #e0e0e0;font-size:12.5px}
+.slip-row .lbl{color:#333}
+.slip-row .amt{font-family:monospace;font-weight:600}
+.slip-note{font-size:9.5px;color:#aaa;margin-left:6px}
+.slip-sub{display:flex;justify-content:space-between;padding:6px 0;font-weight:700;border-top:1.5px solid #333;margin-top:3px;font-size:13px}
+.slip-total{display:flex;justify-content:space-between;padding:8px 0;font-size:15px;font-weight:700;border-top:2px solid #000;border-bottom:2px solid #000;margin-top:3px;font-family:var(--sans)}
+.slip-footer{font-size:11px;color:#555;margin-top:16px;line-height:2}
+.slip-print-row{display:flex;gap:10px;margin-top:20px}
+.slip-print-btn{flex:1;padding:9px;background:#0f1923;color:white;border:none;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:1px}
+.slip-print-btn:hover{background:#2a4a6b}
+.slip-cancel-btn{padding:9px 16px;background:none;border:1px solid #ccc;cursor:pointer;font-size:11px;color:#666}
+@media print{
+  body>*:not(#slip-modal){display:none!important}
+  #slip-modal{display:block!important;position:static!important;transform:none!important;box-shadow:none!important;padding:20px!important;width:100%!important;max-height:none!important}
+  .slip-close-btn,.slip-print-row{display:none!important}
+  #slip-overlay{display:none!important}
+}
+</style>
+<button class="slip-btn" onclick="document.getElementById('slip-overlay').style.display='block';document.getElementById('slip-modal').style.display='block'">
+  🖨&nbsp;&nbsp;列印薪資單
+</button>
+
+<div id="slip-overlay" onclick="closeSlip()"></div>
+<div id="slip-modal">
+  <button class="slip-close-btn" onclick="closeSlip()">✕</button>
+  <div class="slip-co">拾起百味有限公司</div>
+  <div class="slip-info">統一編號：60493910　｜　台中市東勢區102巷66號</div>
+  <div class="slip-title">2026年4月　薪　資　單</div>
+  <div class="slip-info">
+    姓名：張禹婕　　　職稱：負責人<br>
+    結算區間：2026年3月1日 ～ 3月31日<br>
+    發放日期：2026年4月13日
+  </div>
+
+  <div class="slip-sec">應發項目</div>
+  <div class="slip-row"><span class="lbl">本薪</span><span class="amt">$51,000</span></div>
+  <div class="slip-row"><span class="lbl">分紅獎金</span><span class="amt">$10,216</span></div>
+  <div class="slip-sub"><span>議定工資總額</span><span>$61,216</span></div>
+
+  <div class="slip-sec">應扣項目</div>
+  <div class="slip-row"><span class="lbl">全民健康保險費（員工自付）</span><span class="amt">$822</span></div>
+  <div class="slip-sub"><span>應扣合計</span><span>$822</span></div>
+
+  <div class="slip-total"><span>實際發給金額</span><span>$60,394</span></div>
+
+  <div class="slip-footer">
+    到職日期：2025年10月30日<br>
+    特別休假：本年度 0 天｜已用 0 天｜剩餘 0 天<br><br>
+    雇主：拾起百味有限公司
+  </div>
+  <div class="slip-print-row">
+    <button class="slip-print-btn" onclick="window.print()">🖨 列印 ／ 儲存 PDF</button>
+    <button class="slip-cancel-btn" onclick="closeSlip()">關閉</button>
+  </div>
+</div>
+<script>function closeSlip(){document.getElementById('slip-overlay').style.display='none';document.getElementById('slip-modal').style.display='none'}</script>
+
+
+<div class="folio"><span>三明治自己來</span><span>三姨 薪資結構 v4.1</span><span>2026</span></div>
+</div>
+
+<!-- ══ 資產建置目標 ══ -->
+<div class="page" id="tab-asset">
+<div class="masthead">
+  <div><div class="brand-eye">每月資產建置目標</div><div class="brand-name">三姨</div>
+  <div class="brand-role" style="margin-top:6px;font-size:11.5px;color:#444;font-weight:400">每個月，除了把工作做好，一起建立一樣<strong>「留下來的東西」</strong>。</div></div>
+</div>
+
+<div class="sec"><div class="sec-n">一</div><div class="sec-t">流程</div><div class="sec-r"></div></div>
+<div class="flow-steps">
+  <div class="step"><div class="step-num">01</div><div class="step-title">自己設定</div><div class="step-body">月底前決定下月要建立什麼</div></div>
+  <div class="step"><div class="step-num">02</div><div class="step-title">確認標準</div><div class="step-body">明確定義完成的樣子是什麼</div></div>
+  <div class="step"><div class="step-num">03</div><div class="step-title">執行</div><div class="step-body">當月內完成，產出具體文件</div></div>
+  <div class="step"><div class="step-num">04</div><div class="step-title">月底自評</div><div class="step-body">記錄於薪資單，作為下月參考</div></div>
+</div>
+
+<div class="sec" style="margin-top:20px"><div class="sec-n">二</div><div class="sec-t">本月目標</div><div class="sec-r"></div></div>
+<table class="tbl"><thead><tr><th>目標</th><th>產出物</th><th>狀態</th></tr></thead><tbody><tr><td>（自行設定）</td><td>—</td><td>⏳ 進行中</td></tr></tbody></table>
+
+<div class="sec" style="margin-top:20px"><div class="sec-n">三</div><div class="sec-t">範例目標庫</div><div class="sec-r"></div></div>
+<div class="asset-cat"><div class="asset-cat-title">外部合作</div><div class="asset-items"><div class="asset-item"><div class="asset-item-title">找到並接觸 1 位外包對象</div><div class="asset-item-output">聯絡記錄＋評估筆記</div></div><div class="asset-item"><div class="asset-item-title">完成 1 次品牌合作洽談</div><div class="asset-item-output">洽談紀錄（不需成交）</div></div></div></div>
+<div class="asset-cat"><div class="asset-cat-title">知識與策略</div><div class="asset-items"><div class="asset-item"><div class="asset-item-title">完成 1 本商業書籍閱讀</div><div class="asset-item-output">重點筆記一份</div></div><div class="asset-item"><div class="asset-item-title">完成下季產品方向規劃</div><div class="asset-item-output">規劃文件一份</div></div></div></div>
+<div class="asset-cat"><div class="asset-cat-title">制度建立</div><div class="asset-items"><div class="asset-item"><div class="asset-item-title">完成或優化一份公司內部文件</div><div class="asset-item-output">任何 SOP、規範或框架</div></div><div class="asset-item"><div class="asset-item-title">完成當月財報並新增分析指標</div><div class="asset-item-output">財報文件更新</div></div></div></div>
+
+<style id="slip-style">
+.slip-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;background:var(--ink);color:white;border:none;cursor:pointer;font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:20px;transition:background .2s}
+.slip-btn:hover{background:var(--green)}
+#slip-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9000}
+#slip-modal{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;z-index:9999;padding:40px 44px;width:520px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.slip-close-btn{position:absolute;top:14px;right:16px;background:none;border:none;cursor:pointer;font-size:18px;color:#999;line-height:1}
+.slip-close-btn:hover{color:#333}
+.slip-co{font-size:15px;font-weight:700;margin-bottom:2px;font-family:var(--sans)}
+.slip-info{font-size:11px;color:#666;margin-bottom:14px;line-height:1.9}
+.slip-title{font-size:14px;font-weight:700;text-align:center;border-top:2px solid #000;border-bottom:2px solid #000;padding:7px 0;margin:12px 0;letter-spacing:2px;font-family:var(--sans)}
+.slip-sec{font-size:10px;font-weight:700;color:#777;letter-spacing:2px;text-transform:uppercase;margin:14px 0 5px}
+.slip-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dotted #e0e0e0;font-size:12.5px}
+.slip-row .lbl{color:#333}
+.slip-row .amt{font-family:monospace;font-weight:600}
+.slip-note{font-size:9.5px;color:#aaa;margin-left:6px}
+.slip-sub{display:flex;justify-content:space-between;padding:6px 0;font-weight:700;border-top:1.5px solid #333;margin-top:3px;font-size:13px}
+.slip-total{display:flex;justify-content:space-between;padding:8px 0;font-size:15px;font-weight:700;border-top:2px solid #000;border-bottom:2px solid #000;margin-top:3px;font-family:var(--sans)}
+.slip-footer{font-size:11px;color:#555;margin-top:16px;line-height:2}
+.slip-print-row{display:flex;gap:10px;margin-top:20px}
+.slip-print-btn{flex:1;padding:9px;background:#0f1923;color:white;border:none;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:1px}
+.slip-print-btn:hover{background:#2a4a6b}
+.slip-cancel-btn{padding:9px 16px;background:none;border:1px solid #ccc;cursor:pointer;font-size:11px;color:#666}
+@media print{
+  body>*:not(#slip-modal){display:none!important}
+  #slip-modal{display:block!important;position:static!important;transform:none!important;box-shadow:none!important;padding:20px!important;width:100%!important;max-height:none!important}
+  .slip-close-btn,.slip-print-row{display:none!important}
+  #slip-overlay{display:none!important}
+}
+</style>
+<button class="slip-btn" onclick="document.getElementById('slip-overlay').style.display='block';document.getElementById('slip-modal').style.display='block'">
+  🖨&nbsp;&nbsp;列印薪資單
+</button>
+
+<div id="slip-overlay" onclick="closeSlip()"></div>
+<div id="slip-modal">
+  <button class="slip-close-btn" onclick="closeSlip()">✕</button>
+  <div class="slip-co">拾起百味有限公司</div>
+  <div class="slip-info">統一編號：60493910　｜　台中市東勢區102巷66號</div>
+  <div class="slip-title">2026年4月　薪　資　單</div>
+  <div class="slip-info">
+    姓名：張禹婕　　　職稱：負責人<br>
+    結算區間：2026年3月1日 ～ 3月31日<br>
+    發放日期：2026年4月13日
+  </div>
+
+  <div class="slip-sec">應發項目</div>
+  <div class="slip-row"><span class="lbl">本薪</span><span class="amt">$51,000</span></div>
+  <div class="slip-row"><span class="lbl">分紅獎金</span><span class="amt">$10,216</span></div>
+  <div class="slip-sub"><span>議定工資總額</span><span>$61,216</span></div>
+
+  <div class="slip-sec">應扣項目</div>
+  <div class="slip-row"><span class="lbl">全民健康保險費（員工自付）</span><span class="amt">$822</span></div>
+  <div class="slip-sub"><span>應扣合計</span><span>$822</span></div>
+
+  <div class="slip-total"><span>實際發給金額</span><span>$60,394</span></div>
+
+  <div class="slip-footer">
+    到職日期：2025年10月30日<br>
+    特別休假：本年度 0 天｜已用 0 天｜剩餘 0 天<br><br>
+    雇主：拾起百味有限公司
+  </div>
+  <div class="slip-print-row">
+    <button class="slip-print-btn" onclick="window.print()">🖨 列印 ／ 儲存 PDF</button>
+    <button class="slip-cancel-btn" onclick="closeSlip()">關閉</button>
+  </div>
+</div>
+<script>function closeSlip(){document.getElementById('slip-overlay').style.display='none';document.getElementById('slip-modal').style.display='none'}</script>
+
+
+<div class="folio"><span>三明治自己來</span><span>三姨 資產建置目標</span><span>2026</span></div>
+</div>
+
+<script>
+function showTab(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');event.target.classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
+function toggleAcc(btn){const body=btn.nextElementSibling;body.classList.toggle('open');btn.classList.toggle('open');btn.querySelector('span:first-child').textContent=body.classList.contains('open')?'收起歷史紀錄':'展開歷史紀錄'}
+</script>
+</body>
+</html>
